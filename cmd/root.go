@@ -25,7 +25,6 @@ import (
 	"github.com/fatih/color"
 	"os"
 
-	"github.com/clivewalkden/m2-db-sync/common/validateenvironments"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -43,16 +42,15 @@ between individual Magento 2 servers.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		error := color.New(color.Bold, color.BgRed, color.FgWhite).PrintlnFunc()
-		notice := color.New(color.Bold, color.FgBlue).PrintlnFunc()
+		errorMsg := color.New(color.Bold, color.BgRed, color.FgWhite).PrintlnFunc()
+		noticeMsg := color.New(color.Bold, color.FgBlue).PrintlnFunc()
 
 		// Check if the config has been loaded
 		if viper.ConfigFileUsed() == "" {
-			error(" Config file required ")
+			errorMsg(" Config file required ")
 			os.Exit(0)
 		}
-		notice("Run the synchronise command here!")
-		validateenvironments.main(source, destination)
+		noticeMsg("Run the synchronise command here!")
 	},
 }
 

@@ -9,3 +9,5 @@ require (
 )
 
 replace github.com/clivewalkden/m2-db-sync/common => ../common/
+
+replace github.com/clivewalkden/m2-db-sync/validation => ../validation/
