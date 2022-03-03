@@ -22,7 +22,8 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"github.com/fatih/color"
+	"github.com/clivewalkden/m2-db-sync/common"
+	"github.com/clivewalkden/m2-db-sync/validation"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -42,15 +43,17 @@ between individual Magento 2 servers.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		errorMsg := color.New(color.Bold, color.BgRed, color.FgWhite).PrintlnFunc()
-		noticeMsg := color.New(color.Bold, color.FgBlue).PrintlnFunc()
-
 		// Check if the config has been loaded
 		if viper.ConfigFileUsed() == "" {
-			errorMsg(" Config file required ")
+			common.Error(" Config file required ")
 			os.Exit(0)
 		}
-		noticeMsg("Run the synchronise command here!")
+		common.Notice("Run the synchronise command here!")
+
+		err := validation.Validate(source, destination)
+		if err != nil {
+			common.Error(err.Error())
+		}
 	},
 }
 
