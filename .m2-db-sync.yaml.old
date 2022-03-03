@@ -1,0 +1,39 @@
+---
+environments:
+  production:
+    host: 185.197.60.104
+    port: 2020
+    user: root
+    group: root
+    domain: tivoliwines.co.uk
+    magento_dir: /var/www/vhosts/tivoliwines.co.uk/magento
+    backup_dir: /var/www/vhosts/tivoliwines.co.uk/backups
+    shared_dir: /var/www/vhosts/tivoliwines.co.uk/deployment/shared/magento
+    php_path: /usr/bin/php74
+  staging:
+    host: tivoli.magento24.sozowebdesign.com
+    domain: tivoli.magento24.sozowebdesign.com
+  development:
+    host: tivoli.dev.magento24.sozowebdesign.com
+    domain: tivoli.dev.magento24.sozowebdesign.com
+  local:
+    host: tivoli.localhost
+    domain: tivoli.localhost
+    user: clive
+    group: clive
+    magento_dir: /var/www/m2-tivoliwines/magento2
+    backup_dir: /var/www/m2-tivoliwines/dev
+    shared_dir: /var/www/m2-tivoliwines/magento/pub/media
+    php_path: /usr/bin/php
+defaults:
+  port: 22
+  user: magento
+  group: magento
+  magento_dir: /opt/magento/magento2
+  backup_dir: /opt/magento/backups
+  shared_dir: /opt/magento/deployment/shared/magento
+  php_path: /usr/bin/php
+  n98_path: /usr/local/bin/n98-magerun
+  wordpress: true
+  ignore_tables:
+    - mageplaza_smtp_log
