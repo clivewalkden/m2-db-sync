@@ -22,9 +22,12 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"bytes"
+	"fmt"
 	"github.com/clivewalkden/m2-db-sync/common"
 	"github.com/clivewalkden/m2-db-sync/validation"
 	"os"
+	"os/exec"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -48,12 +51,27 @@ between individual Magento 2 servers.`,
 			common.Error(" Config file required ")
 			os.Exit(0)
 		}
-		common.Notice("Run the synchronise command here!")
 
 		err := validation.Validate(source, destination)
 		if err != nil {
 			common.Error(err.Error())
 		}
+
+		// Prepare Server values
+		srcServer := common.ServerSetup(source)
+		//destServer := common.ServerSetup(destination)
+
+		// Test Connection to the server
+		sshRemoteMachine := fmt.Sprintf("%s@%s", srcServer.User, srcServer.Host)
+		sshRemotePort := fmt.Sprintf("-p%d", srcServer.Port)
+		sshCmd := exec.Command("ssh", sshRemotePort, sshRemoteMachine, "uptime")
+		var out bytes.Buffer
+		sshCmd.Stdout = &out
+		sshErr := sshCmd.Run()
+		if sshErr != nil {
+			common.Error(sshErr.Error())
+		}
+		fmt.Fprintln(os.Stdout, out.String())
 	},
 }
 
@@ -81,7 +99,7 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.MarkPersistentFlagRequired("config")
+	//rootCmd.MarkPersistentFlagRequired("config")
 	rootCmd.MarkPersistentFlagRequired("source")
 	rootCmd.MarkPersistentFlagRequired("destination")
 }
@@ -99,6 +117,8 @@ func initConfig() {
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
+	//fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	//viper.Debug()
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {

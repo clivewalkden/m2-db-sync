@@ -5,7 +5,9 @@ environments:
     port: 2020
     user: root
     group: root
-    domain: tivoliwines.co.uk
+    domain:
+      - tivoliwines.co.uk
+      - nutritionx.co.uk
     magento_dir: /var/www/vhosts/tivoliwines.co.uk/magento
     backup_dir: /var/www/vhosts/tivoliwines.co.uk/backups
     shared_dir: /var/www/vhosts/tivoliwines.co.uk/deployment/shared/magento
