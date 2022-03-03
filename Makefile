@@ -16,7 +16,8 @@ vet: fmt
 
 build: vet
 	echo "Compiling for every OS and Platform"
-	GOOS=freebsd GOARCH=386 ${GO_BIN} build -o bin/main-freebsd-386 main.go
-	GOOS=linux GOARCH=386 ${GO_BIN} build -o bin/main-linux-386 main.go
-	GOOS=windows GOARCH=386 ${GO_BIN} build -o bin/main-windows-386.exe main.go
+	GOOS=freebsd GOARCH=amd64 ${GO_BIN} build -o bin/main-freebsd-amd64 main.go
+	GOOS=darwin GOARCH=arm64 ${GO_BIN} build -o bin/m2-db-sync-macos-arm64 main.go
+	GOOS=linux GOARCH=amd64 ${GO_BIN} build -o bin/m2-db-sync-linux-amd64 main.go
+	GOOS=windows GOARCH=amd64 ${GO_BIN} build -o bin/m2-db-sync-windows-amd64.exe main.go
 .PHONY:build
