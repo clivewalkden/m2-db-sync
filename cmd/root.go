@@ -74,7 +74,7 @@ between individual Magento 2 servers.`,
 
 		// Test Connection to the server
 		//common.Connect(srcServer, "ls -alh")
-		common.RemoteBackup(config)
+		common.RemoteDBBackup(config)
 	},
 }
 

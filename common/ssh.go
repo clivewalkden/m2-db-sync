@@ -17,9 +17,19 @@ type Config struct {
 	WordPressNetwork bool
 }
 
-func RemoteBackup(config Config) {
+func RemoteDBBackup(config Config) {
+	err := remoteDBBackupPrepare(config)
+
+	if err != nil {
+		Error(err.Error())
+		os.Exit(1)
+	}
+}
+
+func remoteDBBackupPrepare(config Config) error {
 	//data := populateStruct(srcServer, destServer)
-	const bashScript = `mkdir -p {{.Src.BackupDir}}
+	const bashScript = `
+mkdir -p {{.Src.BackupDir}}
 cd {{.Src.BackupDir}}
 # Check the commands are available
 if ! command -v {{.Src.PhpPath}} &> /dev/null
@@ -39,15 +49,11 @@ fi
 {{- end}}
 {{if .WordPress}}
 cd wp
-{{ if eq (len .Src.Domain) 1 }}
-wp search-replace '{{.Src.Domain}}' '{{.Dest.Domain}}' --all-tables --export | gzip > {{.Src.BackupDir}}/latest-wp.sql.gz
-{{- else}}
-loads
-{{- end}}
+{{.Src.PhpPath}} {{.Src.N98Path}} --quiet --no-interaction db:dump --no-tablespaces --compression="gzip" --connection="wordpress" --force {{.Src.BackupDir}}/latest-wp.sql.gz
 {{- end}}
 `
 	t := template.Must(template.New("bashScript").Parse(bashScript))
-	t.Execute(os.Stdout, config)
+	return t.Execute(os.Stdout, config)
 }
 
 func Connect(srcServer Server, payload string) {
