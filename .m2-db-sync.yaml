@@ -5,9 +5,7 @@ environments:
     port: 2020
     user: root
     group: root
-    domain:
-      - tivoliwines.co.uk
-      - nutritionx.co.uk
+    domain: tivoliwines.co.uk
     magento_dir: /var/www/vhosts/tivoliwines.co.uk/magento
     backup_dir: /var/www/vhosts/tivoliwines.co.uk/backups
     shared_dir: /var/www/vhosts/tivoliwines.co.uk/deployment/shared/magento
@@ -36,6 +34,6 @@ defaults:
   shared_dir: /opt/magento/deployment/shared/magento
   php_path: /usr/bin/php
   n98_path: /usr/local/bin/n98-magerun
-  wordpress: true
+  wordpress_network: false
   ignore_tables:
     - mageplaza_smtp_log

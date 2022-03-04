@@ -2,7 +2,7 @@ package validation
 
 import "errors"
 
-func Validate(source string, destination string) (err error) {
+func EnvironmentsValidation(source string, destination string) (err error) {
 	if source == destination {
 		return errors.New("error: source and destination can't match")
 	}

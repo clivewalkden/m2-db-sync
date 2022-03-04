@@ -22,20 +22,19 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"bytes"
-	"fmt"
 	"github.com/clivewalkden/m2-db-sync/common"
 	"github.com/clivewalkden/m2-db-sync/validation"
-	"os"
-	"os/exec"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"os"
 )
 
 var cfgFile string
 var source string
 var destination string
+var full bool
+var prefix bool
+var wordpress bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -49,29 +48,33 @@ between individual Magento 2 servers.`,
 		// Check if the config has been loaded
 		if viper.ConfigFileUsed() == "" {
 			common.Error(" Config file required ")
-			os.Exit(0)
+			os.Exit(1)
 		}
 
-		err := validation.Validate(source, destination)
-		if err != nil {
-			common.Error(err.Error())
+		errEnvVal := validation.EnvironmentsValidation(source, destination)
+		if errEnvVal != nil {
+			common.Error(errEnvVal.Error())
+			os.Exit(1)
 		}
 
 		// Prepare Server values
-		srcServer := common.ServerSetup(source)
-		//destServer := common.ServerSetup(destination)
+		config := common.Config{
+			Src:       common.ServerSetup(source),
+			Dest:      common.ServerSetup(destination),
+			PiiDB:     full,
+			Prefix:    prefix,
+			WordPress: wordpress,
+		}
+
+		errConVal := validation.ConfigValidation(config)
+		if errConVal != nil {
+			common.Error(errConVal.Error())
+			os.Exit(1)
+		}
 
 		// Test Connection to the server
-		sshRemoteMachine := fmt.Sprintf("%s@%s", srcServer.User, srcServer.Host)
-		sshRemotePort := fmt.Sprintf("-p%d", srcServer.Port)
-		sshCmd := exec.Command("ssh", sshRemotePort, sshRemoteMachine, "uptime")
-		var out bytes.Buffer
-		sshCmd.Stdout = &out
-		sshErr := sshCmd.Run()
-		if sshErr != nil {
-			common.Error(sshErr.Error())
-		}
-		fmt.Fprintln(os.Stdout, out.String())
+		//common.Connect(srcServer, "ls -alh")
+		common.RemoteBackup(config)
 	},
 }
 
@@ -95,6 +98,9 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVarP(&source, "source", "s", "", "source environment (production, staging, development)")
 	rootCmd.PersistentFlags().StringVarP(&destination, "destination", "d", "", "destination environment (local, development, staging)")
+	rootCmd.PersistentFlags().BoolVarP(&full, "full", "f", false, "full database dump (off by default)")
+	rootCmd.PersistentFlags().BoolVarP(&prefix, "prefix", "p", true, "prefix invoices, orders, shipments etc (off by default)")
+	rootCmd.PersistentFlags().BoolVarP(&wordpress, "wordpress", "w", true, "include WordPress content (off by default)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
